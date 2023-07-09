@@ -8,8 +8,10 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.core import serializers
 
 from .models import Deal
+from .utils import fill_new_deal_set
 
 logger = logging.getLogger(__name__)
 
@@ -49,15 +51,7 @@ class PostTableView(APIView):
         _reader = csv.reader(io_string, delimiter=',')
         # skip header
         _reader.__next__()
-        for line in _reader:
-            logger.info(line)
-            deal = Deal()
-            deal.customer = line[0]
-            deal.item = line[1]
-            deal.total = int(line[2])
-            deal.quantity = int(line[3])
-            deal.date = line[4]
-            deal.save()
+        fill_new_deal_set(_reader)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -77,4 +71,7 @@ class GetTopCustomers(APIView):
         }
     )
     def get(self, request):
-        pass
+        return Response(
+            status=status.HTTP_200_OK,
+            data=serializers.serialize('json', Deal.objects.all()),
+        )
