@@ -8,11 +8,9 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.core import serializers
-from django.db.models import Sum, Count
 
-from .models import Deal
-from .utils import fill_new_deal_set
+from .models import Deal, DealSet
+from .utils import fill_new_deal_set, process_top_customers
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +21,8 @@ class PostTableView(APIView):
     parser_classes = (MultiPartParser,)
 
     @swagger_auto_schema(
-        operation_id="Upload deals table",
+        operation_id="upload_deals_table",
+        operation_summary="Upload deals table",
         manual_parameters=[
             openapi.Parameter(
                 "file",
@@ -70,7 +69,8 @@ class PostTableView(APIView):
 
 class GetTopCustomers(APIView):
     @swagger_auto_schema(
-        operation_id="Get the most spent users",
+        operation_id="get_the_most_spent_users",
+        operation_summary="Get the most spent users",
         operation_description="Get list of 5 clients who spent "
                               "the largest amount for the entire period.",
         responses={
@@ -106,46 +106,5 @@ class GetTopCustomers(APIView):
         },
     )
     def get(self, request):
-        # Get the top 5 customers who spent
-        #   the most money for the entire period
-        top_5_customers = (
-            Deal.objects.values("customer")
-            .annotate(spent_money=Sum("total"))
-            .order_by("-spent_money")[:5]
-        )
-
-        # Get the list of gems that were bought by
-        #   at least two customers from the top 5 customers,
-        #   and the current customer is one of them
-        gem_list = (
-            Deal.objects.filter(
-                customer__in=[c["customer"] for c in top_5_customers]
-            )
-            .values("item")
-            .annotate(customer_count=Count("customer", distinct=True))
-            .filter(customer_count__gte=2)
-            .values_list("item", flat=True)
-        )
-
-        # Form the response
-        response_data = []
-        for customer in top_5_customers:
-            # Get the list of gems bought by this customer
-            customer_gems = (
-                Deal.objects.filter(
-                    customer=customer["customer"], item__in=gem_list
-                )
-                .values_list("item", flat=True)
-                .distinct()
-            )
-
-            # Add the customer and their data to the response
-            response_data.append(
-                {
-                    "username": customer["customer"],
-                    "spent_money": customer["spent_money"],
-                    "gems": list(customer_gems),
-                }
-            )
-        response = {"response": response_data}
+        response = {"response": process_top_customers(DealSet.get_last())}
         return Response(status=status.HTTP_200_OK, data=response)
