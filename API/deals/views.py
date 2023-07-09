@@ -45,15 +45,15 @@ class PostTableView(APIView):
         file_obj = request.FILES["file"]
         file_type = file_obj.content_type
         logger.info(f"got file with type: {file_type}")
-        if file_type != TEXT_CSF_FILETYPE:
-            return Response(
-                status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, exception=True
-            )
         if not file_obj:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,
                 exception=True,
                 data="File expected",
+            )
+        if file_type != TEXT_CSF_FILETYPE:
+            return Response(
+                status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, exception=True
             )
 
         try:

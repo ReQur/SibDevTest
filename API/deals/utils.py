@@ -11,6 +11,15 @@ logger = logging.getLogger(__name__)
 
 @transaction.atomic()
 def fill_new_deal_set(deals_iter) -> None:
+    """
+    Create new DealSet and fill it with values
+        from got iterator. Atomic DB operation.
+    :param deals_iter: _reader Iterator
+    :return: None
+    :raises:
+        ValueError,
+        IndexError
+    """
     deal_set = DealSet()
     deal_set.save()
 
@@ -29,6 +38,10 @@ def fill_new_deal_set(deals_iter) -> None:
 
 @cache
 def process_top_customers(deals: QuerySet) -> list[dict]:
+    """
+    :param deals: QuerySet of deals to process.
+    :return: list[dict]
+    """
     logger.info("Process top customers with new deals query set")
     # Get the top 5 customers who spent
     #   the most money for the entire period
