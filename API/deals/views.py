@@ -1,4 +1,6 @@
+import io
 import logging
+import csv
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -24,9 +26,12 @@ class PostTableView(APIView):
             status.HTTP_204_NO_CONTENT: openapi.Response(
                 'Success'
             ),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(
+                "Failure: File expected"
+            ),
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: openapi.Response(
                 "Failure: Got file that isn't .csv format"
-            )
+            ),
         }
     )
     def post(self, request):
@@ -35,8 +40,26 @@ class PostTableView(APIView):
         logger.info(f"got file with type: {file_type}")
         if file_type != TEXT_CSF_FILETYPE:
             return Response(status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, exception=True)
-        if file_obj:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        if not file_obj:
+            return Response(status=status.HTTP_400_BAD_REQUEST, exception=True, data="File expected")
+
+        decoded_file = file_obj.read().decode('utf-8')
+        io_string = io.StringIO(decoded_file)
+
+        _reader = csv.reader(io_string, delimiter=',')
+        # skip header
+        _reader.__next__()
+        for line in _reader:
+            logger.info(line)
+            deal = Deal()
+            deal.customer = line[0]
+            deal.item = line[1]
+            deal.total = int(line[2])
+            deal.quantity = int(line[3])
+            deal.date = line[4]
+            deal.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class GetTopCustomers(APIView):
     @swagger_auto_schema(

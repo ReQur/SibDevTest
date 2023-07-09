@@ -5,5 +5,5 @@ class Deal(models.Model):
     item = models.CharField('item', max_length=64)
     total = models.IntegerField('total')
     quantity = models.IntegerField('quantity')
-    date = models.DateField()
+    date = models.DateTimeField()
 
