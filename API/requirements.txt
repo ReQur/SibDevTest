@@ -1,0 +1,4 @@
+Django==3.1
+djangorestframework==3.12
+drf-yasg==1.21.6
+drf-yasg[validation]==1.21.6
