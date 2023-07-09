@@ -34,7 +34,7 @@ class PostTableView(APIView):
         responses={
             status.HTTP_204_NO_CONTENT: openapi.Response("Success"),
             status.HTTP_400_BAD_REQUEST: openapi.Response(
-                "Failure: File expected"
+                "Failure: Problem related to file reading"
             ),
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: openapi.Response(
                 "Failure: Got file that isn't .csv format"
@@ -56,13 +56,21 @@ class PostTableView(APIView):
                 data="File expected",
             )
 
-        decoded_file = file_obj.read().decode("utf-8")
-        io_string = io.StringIO(decoded_file)
+        try:
+            decoded_file = file_obj.read().decode("utf-8")
+            io_string = io.StringIO(decoded_file)
 
-        _reader = csv.reader(io_string, delimiter=",")
-        # skip header
-        _reader.__next__()
-        fill_new_deal_set(_reader)
+            _reader = csv.reader(io_string, delimiter=",")
+            # skip header
+            _reader.__next__()
+
+            fill_new_deal_set(_reader)
+        except (UnicodeDecodeError, csv.Error, ValueError, IndexError)  as e:
+            return Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                exception=True,
+                data="Unprocessable file",
+            )
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
