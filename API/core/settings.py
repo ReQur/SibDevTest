@@ -114,7 +114,7 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -139,11 +139,11 @@ LOGGING = {
     "handlers": {
         "console": {"class": "logging.StreamHandler", "formatter": "console"},
         "file": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "formatter": "file",
             "filename": "debug.log",
         },
     },
-    "loggers": {"": {"level": "DEBUG", "handlers": ["console", "file"]}},
+    "loggers": {"": {"level": "INFO", "handlers": ["console", "file"]}},
 }

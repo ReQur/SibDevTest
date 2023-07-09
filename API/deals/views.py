@@ -9,7 +9,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Deal, DealSet
+from .models import DealSet
 from .utils import fill_new_deal_set, process_top_customers
 
 logger = logging.getLogger(__name__)

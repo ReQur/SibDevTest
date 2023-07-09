@@ -13,8 +13,9 @@ class DealSet(models.Model):
     def save(
         self, **kwargs
     ):
-        self._cached_deals = None
         super().save(**kwargs)
+        logger.info("New data saved. Clear cache")
+        DealSet._cached_deals = None
         
     @classmethod
     def get_last(cls) -> models.QuerySet:
