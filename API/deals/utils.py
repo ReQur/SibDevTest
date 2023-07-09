@@ -6,6 +6,7 @@ from .models import DealSet, Deal
 
 logger = logging.getLogger(__name__)
 
+
 @transaction.atomic()
 def fill_new_deal_set(deals_iter):
     deal_set = DealSet()

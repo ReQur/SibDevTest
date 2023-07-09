@@ -8,27 +8,51 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DealSet',
+            name="DealSet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Deal',
+            name="Deal",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('customer', models.CharField(max_length=64, verbose_name='customer')),
-                ('item', models.CharField(max_length=64, verbose_name='item')),
-                ('total', models.IntegerField(verbose_name='total')),
-                ('quantity', models.IntegerField(verbose_name='quantity')),
-                ('date', models.DateTimeField()),
-                ('deal_set', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='deals.dealset')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "customer",
+                    models.CharField(max_length=64, verbose_name="customer"),
+                ),
+                ("item", models.CharField(max_length=64, verbose_name="item")),
+                ("total", models.IntegerField(verbose_name="total")),
+                ("quantity", models.IntegerField(verbose_name="quantity")),
+                ("date", models.DateTimeField()),
+                (
+                    "deal_set",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="deals.dealset",
+                    ),
+                ),
             ],
         ),
     ]

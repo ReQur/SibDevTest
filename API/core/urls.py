@@ -21,19 +21,27 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title="SibDev test",
-      default_version='v1',
-      description="API for SibDev test",
-      contact=openapi.Contact(email="dank2801@gmail.com"),
-   ),
-   public=True,
-   permission_classes=[permissions.AllowAny],
+    openapi.Info(
+        title="SibDev test",
+        default_version="v1",
+        description="API for SibDev test",
+        contact=openapi.Contact(email="dank2801@gmail.com"),
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('deals/', include('deals.urls')),
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path("admin/", admin.site.urls),
+    path("deals/", include("deals.urls")),
+    re_path(
+        r"^swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
+    re_path(
+        r"^swagger/$",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
 ]
